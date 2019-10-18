@@ -26,13 +26,18 @@ function asyncCallbacker(first, then) {
     if (typeof first != 'function' || typeof then != 'function') {
         throw('arguments must be functions');
     }
-    //let data = '';
-    first(undefined, function(data) {
-        then(data, function(data) {
+    let _args = [...arguments];
+    let _first = _args.shift();
+    const done = (data) => {
+        if (_args.length > 0) {
+            let callbk = _args.shift();
+            callbk(data, done);
+        }
+        else {
             return data;
-        });
-    })
+        }
+    }
+    _first(undefined, done);
 }
-
 
 module.exports = { syncCallbacker, asyncCallbacker };
